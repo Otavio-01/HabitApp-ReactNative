@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Alert,
   FlatList,
   Platform,
   SafeAreaView,
@@ -10,14 +11,34 @@ import {
 } from 'react-native';
 
 // Importando nosso cérebro e nossos blocos
-// O caminho (../) está correto para sair de (tabs) e depois de app
-import AddHabitForm from '../../components/AddHabitForm'; // Requisito: Componente
-import HabitCard from '../../components/HabitCard'; // Requisito: Componente
-import { useHabits } from '../../hooks/useHabits'; // Requisito: Hook customizado
+import AddHabitForm from '../../components/AddHabitForm'; // Requisito: Componente [cite: 20]
+import HabitCard from '../../components/HabitCard'; // Requisito: Componente [cite: 19]
+import { useHabits } from '../../hooks/useHabits'; // Requisito: Hook customizado [cite: 14]
 
 export default function HomeScreen() {
-  // Pegando a lógica centralizada do nosso hook
-  const { habits, addHabit, toggleHabitCompletion } = useHabits();
+  // Pegando a lógica centralizada (agora com 'removeHabit')
+  const { habits, addHabit, toggleHabitCompletion, removeHabit } = useHabits();
+
+  // --- NOVIDADE AQUI ---
+  // Função para confirmar a remoção (para não apagar sem querer)
+  const handleRemoveHabit = (id: string, text: string) => {
+    Alert.alert(
+      "Remover Hábito",
+      `Você tem certeza que deseja remover o hábito "${text}"?`,
+      [
+        {
+          text: "Cancelar",
+          style: "cancel"
+        },
+        { 
+          text: "Remover", 
+          onPress: () => removeHabit(id), // Só remove se clicar aqui
+          style: "destructive"
+        }
+      ]
+    );
+  };
+  // --- FIM DA NOVIDADE ---
 
   return (
     <SafeAreaView style={styles.container}>
@@ -35,7 +56,10 @@ export default function HomeScreen() {
         renderItem={({ item }) => (
           <HabitCard
             habit={item}
-            onToggleCompletion={() => toggleHabitCompletion(item.id)} // Passa a função de marcar
+            onToggleCompletion={() => toggleHabitCompletion(item.id)}
+            // --- NOVIDADE AQUI ---
+            onRemove={() => handleRemoveHabit(item.id, item.text)} // Passa a função de remover
+            // --- FIM DA NOVIDADE ---
           />
         )}
         ListEmptyComponent={
@@ -49,12 +73,11 @@ export default function HomeScreen() {
   );
 }
 
-// Requisito: Layout com StyleSheet
+// Requisito: Layout com StyleSheet [cite: 23]
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f4f4f8',
-    // Garante que não sobreponha a barra de status do Android
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   header: {
@@ -68,7 +91,7 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   list: {
-    flex: 1, // Ocupa o espaço restante
+    flex: 1, 
   },
   emptyContainer: {
     flex: 1,

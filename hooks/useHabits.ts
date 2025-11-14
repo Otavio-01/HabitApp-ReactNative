@@ -30,7 +30,7 @@ export function useHabits() {
 
   const loadHabits = async () => {
     try {
-      const storedHabits = await AsyncStorage.getItem(STORAGE_KEY);
+      const storedHabits = await AsyncStorage.getItem(STORAGE_KEY); // Requisito: carregar dados
       if (storedHabits !== null) {
         setHabits(JSON.parse(storedHabits));
       }
@@ -42,13 +42,13 @@ export function useHabits() {
   const saveHabits = async (habitsToSave: Habit[]) => {
     try {
       const jsonValue = JSON.stringify(habitsToSave);
-      await AsyncStorage.setItem(STORAGE_KEY, jsonValue);
+      await AsyncStorage.setItem(STORAGE_KEY, jsonValue); // Requisito: salvar dados
     } catch (e) {
       console.error("Erro ao salvar hábitos: ", e);
     }
   };
 
-  const addHabit = (text: string) => {
+  const addHabit = (text: string) => { // Requisito: adicionar hábitos
     if (!text || text.trim() === "") return; // Evita hábitos vazios
 
     const newHabit: Habit = {
@@ -60,7 +60,7 @@ export function useHabits() {
     setHabits(prevHabits => [...prevHabits, newHabit]);
   };
 
-  const toggleHabitCompletion = (id: string) => {
+  const toggleHabitCompletion = (id: string) => { // Requisito: marcar como concluído
     setHabits(prevHabits =>
       prevHabits.map(habit =>
         habit.id === id ? { ...habit, completedToday: !habit.completedToday } : habit
@@ -68,6 +68,19 @@ export function useHabits() {
     );
   };
 
+  // --- NOVIDADE AQUI ---
+  /**
+   * Remove um hábito da lista baseado no ID
+   */
+  const removeHabit = (id: string) => { // Requisito: remover hábitos
+    setHabits(prevHabits => 
+      prevHabits.filter(habit => habit.id !== id)
+    );
+  };
+  // --- FIM DA NOVIDADE ---
+
+
   // Retorna os dados e as funções que o app usará
-  return { habits, addHabit, toggleHabitCompletion };
+  // Adicionamos 'removeHabit' ao retorno
+  return { habits, addHabit, toggleHabitCompletion, removeHabit };
 }

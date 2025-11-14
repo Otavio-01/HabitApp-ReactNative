@@ -1,17 +1,24 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Habit } from '../hooks/useHabits'; // Importando a "forma" do hábito que criamos
+import { Habit } from '../hooks/useHabits'; // Importando a "forma" do hábito
 
 // Definindo as propriedades do componente
 type HabitCardProps = {
   habit: Habit;
   onToggleCompletion: () => void;
+  onRemove: () => void; // --- NOVIDADE AQUI ---
 };
 
-// Requisito: Componente HabitCard
-export default function HabitCard({ habit, onToggleCompletion }: HabitCardProps) {
+// Requisito: Componente HabitCard [cite: 19]
+export default function HabitCard({ habit, onToggleCompletion, onRemove }: HabitCardProps) {
   return (
     <View style={styles.card}>
+      {/* --- NOVIDADE AQUI: Botão de Remover --- */}
+      <TouchableOpacity onPress={onRemove} style={styles.removeButton}>
+        <Text style={styles.removeButtonText}>X</Text>
+      </TouchableOpacity>
+      {/* --- FIM DA NOVIDADE --- */}
+      
       <Text style={[styles.text, habit.completedToday && styles.textCompleted]}>
         {habit.text}
       </Text>
@@ -26,7 +33,7 @@ export default function HabitCard({ habit, onToggleCompletion }: HabitCardProps)
   );
 }
 
-// Requisito: Layout com StyleSheet
+// Requisito: Layout com StyleSheet [cite: 23]
 const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
@@ -37,8 +44,8 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     marginHorizontal: 16,
     borderRadius: 10,
-    elevation: 2, // Sombra para Android
-    shadowColor: '#000', // Sombra para iOS
+    elevation: 2, 
+    shadowColor: '#000', 
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
@@ -46,6 +53,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 18,
     flex: 1, 
+    marginLeft: 15, // Aumentamos a margem para dar espaço ao "X"
   },
   textCompleted: {
     textDecorationLine: 'line-through',
@@ -71,4 +79,19 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  // --- NOVIDADE AQUI: Estilos do Botão Remover ---
+  removeButton: {
+    width: 28,
+    height: 28,
+    borderRadius: 5,
+    backgroundColor: '#ff4d4d', // Cor vermelha para "perigo"
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  removeButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  // --- FIM DA NOVIDADE ---
 });
